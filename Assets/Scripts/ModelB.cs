@@ -29,24 +29,39 @@ public class ModelB
 
     private void AddTextureCoordinates()
     {
-        bTextureCoordinates.Add(new Vector2(0.25f, 0.5f));
-        bTextureCoordinates.Add(new Vector2(0.125f, 0.6f));
-        bTextureCoordinates.Add(new Vector2(0.125f, 0.8f));
-        bTextureCoordinates.Add(new Vector2(0.25f, 0.9f));
-        bTextureCoordinates.Add(new Vector2(0.5f, 0.9f));
-        bTextureCoordinates.Add(new Vector2(0.5f, 0.1f));
-        bTextureCoordinates.Add(new Vector2(0.25f, 0.1f));
-        bTextureCoordinates.Add(new Vector2(0.125f, 0.2f));
-        bTextureCoordinates.Add(new Vector2(0.125f, 0.4f));
-        bTextureCoordinates.Add(new Vector2(0.875f, 0.5f));
-        bTextureCoordinates.Add(new Vector2(1, 0.6f));
-        bTextureCoordinates.Add(new Vector2(1, 0.8f));
-        bTextureCoordinates.Add(new Vector2(0.875f, 0.9f));
-        bTextureCoordinates.Add(new Vector2(0.625f, 0.9f));
-        bTextureCoordinates.Add(new Vector2(0.625f, 0.1f));
-        bTextureCoordinates.Add(new Vector2(0.875f, 0.1f));
-        bTextureCoordinates.Add(new Vector2(1, 0.2f));
-        bTextureCoordinates.Add(new Vector2(1, 0.4f));
+        bTextureCoordinates.Add(new Vector2());
+        bTextureCoordinates.Add(new Vector2());
+        bTextureCoordinates.Add(new Vector2());
+        bTextureCoordinates.Add(new Vector2());
+        bTextureCoordinates.Add(new Vector2());
+        bTextureCoordinates.Add(new Vector2());
+        bTextureCoordinates.Add(new Vector2());
+        bTextureCoordinates.Add(new Vector2());
+        bTextureCoordinates.Add(new Vector2());
+        bTextureCoordinates.Add(new Vector2());
+        bTextureCoordinates.Add(new Vector2());
+        bTextureCoordinates.Add(new Vector2());
+        bTextureCoordinates.Add(new Vector2());
+        bTextureCoordinates.Add(new Vector2());
+        bTextureCoordinates.Add(new Vector2());
+        bTextureCoordinates.Add(new Vector2());
+        bTextureCoordinates.Add(new Vector2());
+        bTextureCoordinates.Add(new Vector2());
+        bTextureCoordinates.Add(new Vector2());
+        bTextureCoordinates.Add(new Vector2());
+        bTextureCoordinates.Add(new Vector2());
+        bTextureCoordinates.Add(new Vector2());
+        bTextureCoordinates.Add(new Vector2());
+        bTextureCoordinates.Add(new Vector2());
+        bTextureCoordinates.Add(new Vector2());
+        bTextureCoordinates.Add(new Vector2());
+        bTextureCoordinates.Add(new Vector2());
+        bTextureCoordinates.Add(new Vector2());
+        bTextureCoordinates.Add(new Vector2());
+        bTextureCoordinates.Add(new Vector2());
+        bTextureCoordinates.Add(new Vector2());
+        bTextureCoordinates.Add(new Vector2());
+        bTextureCoordinates.Add(new Vector2());
     }
 
     private void AddIndicesAndNormals()
