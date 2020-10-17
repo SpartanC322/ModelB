@@ -92,100 +92,124 @@ public class ModelB
         bIndexList.Add(13);
 
         //Back Top 2
-        bTextureIndexList.Add(10);
-        bTextureIndexList.Add(11);
-        bTextureIndexList.Add(13);
+        bIndexList.Add(10);
+        bIndexList.Add(11);
+        bIndexList.Add(13);
 
         //Back Top 3
-        bTextureIndexList.Add(11);
-        bTextureIndexList.Add(12);
-        bTextureIndexList.Add(13);
+        bIndexList.Add(11);
+        bIndexList.Add(12);
+        bIndexList.Add(13);
 
         //Back Middle
-        bTextureIndexList.Add(9);
-        bTextureIndexList.Add(13);
-        bTextureIndexList.Add(14);
+        bIndexList.Add(9);
+        bIndexList.Add(13);
+        bIndexList.Add(14);
 
         //Back Bottom 1
-        bTextureIndexList.Add(14);
-        bTextureIndexList.Add(15);
-        bTextureIndexList.Add(16);
+        bIndexList.Add(14);
+        bIndexList.Add(15);
+        bIndexList.Add(16);
 
         //Back Bottom 2
-        bTextureIndexList.Add(14);
-        bTextureIndexList.Add(16);
-        bTextureIndexList.Add(17);
+        bIndexList.Add(14);
+        bIndexList.Add(16);
+        bIndexList.Add(17);
 
         //Back Bottom 3
-        bTextureIndexList.Add(14);
-        bTextureIndexList.Add(17);
-        bTextureIndexList.Add(9);
+        bIndexList.Add(14);
+        bIndexList.Add(17);
+        bIndexList.Add(9);
 
         //Left 1
-        bTextureIndexList.Add(13);
-        bTextureIndexList.Add(4);
-        bTextureIndexList.Add(5);
+        bIndexList.Add(13);
+        bIndexList.Add(4);
+        bIndexList.Add(5);
 
         //Left 2
-        bTextureIndexList.Add(13);
-        bTextureIndexList.Add(4);
-        bTextureIndexList.Add(14);
+        bIndexList.Add(13);
+        bIndexList.Add(4);
+        bIndexList.Add(14);
 
         //Right 1
-        bTextureIndexList.Add(8);
-        bTextureIndexList.Add(13);
-        bTextureIndexList.Add(16);
-        bTextureIndexList.Add(7);
-
+        bIndexList.Add(8);
+        bIndexList.Add(13);
+        bIndexList.Add(16);
+        
         //Right 2
-        bTextureIndexList.Add(7);
-        bTextureIndexList.Add(16);
-        bTextureIndexList.Add(17);
-        bTextureIndexList.Add(8);
+        bIndexList.Add(16);
+        bIndexList.Add(7);
+        bIndexList.Add(8);
 
         //Right 3
-        bTextureIndexList.Add(8);
-        bTextureIndexList.Add(17);
-        bTextureIndexList.Add(9);
-        bTextureIndexList.Add(0);
+        bIndexList.Add(7);
+        bIndexList.Add(16);
+        bIndexList.Add(17);
 
         //Right 4
-        bTextureIndexList.Add(0);
-        bTextureIndexList.Add(9);
-        bTextureIndexList.Add(10);
-        bTextureIndexList.Add(1);
+        bIndexList.Add(7);
+        bIndexList.Add(8);
+        bIndexList.Add(17);
 
         //Right 5
-        bTextureIndexList.Add(1);
-        bTextureIndexList.Add(10);
-        bTextureIndexList.Add(11);
-        bTextureIndexList.Add(2);
+        bIndexList.Add(8);
+        bIndexList.Add(17);
+        bIndexList.Add(9);
 
         //Right 6
-        bTextureIndexList.Add(2);
-        bTextureIndexList.Add(11);
-        bTextureIndexList.Add(12);
-        bTextureIndexList.Add(3);
+        bIndexList.Add(9);
+        bIndexList.Add(0);
+        bIndexList.Add(8);
+
+        //Right 7
+        bIndexList.Add(0);
+        bIndexList.Add(9);
+        bIndexList.Add(10);
+
+        //Right 8
+        bIndexList.Add(10);
+        bIndexList.Add(1);
+        bIndexList.Add(0);
+
+        //Right 9
+        bIndexList.Add(1);
+        bIndexList.Add(10);
+        bIndexList.Add(11);
+
+        //Right 10
+        bIndexList.Add(11);
+        bIndexList.Add(2);
+        bIndexList.Add(1);
+
+        //Right 11
+        bIndexList.Add(2);
+        bIndexList.Add(11);
+        bIndexList.Add(12);
+
+        //Right 12
+        bIndexList.Add(12);
+        bIndexList.Add(3);
+        bIndexList.Add(2);
 
         //Top 1
-        bTextureIndexList.Add(4);
-        bTextureIndexList.Add(3);
-        bTextureIndexList.Add(12);
+        bIndexList.Add(4);
+        bIndexList.Add(3);
+        bIndexList.Add(12);
 
         //Top 2
-        bTextureIndexList.Add(12);
-        bTextureIndexList.Add(13);
-        bTextureIndexList.Add(4);
+        bIndexList.Add(12);
+        bIndexList.Add(13);
+        bIndexList.Add(4);
 
         //Back 1
-        bTextureIndexList.Add(5);
-        bTextureIndexList.Add(6);
-        bTextureIndexList.Add(15);
+        bIndexList.Add(5);
+        bIndexList.Add(6);
+        bIndexList.Add(15);
 
         //Back 2
-        bTextureIndexList.Add(15);
-        bTextureIndexList.Add(14);
-        bTextureIndexList.Add(5);
+        bIndexList.Add(15);
+        bIndexList.Add(14);
+        bIndexList.Add(5);
     }
 
     private void AddVertices()
