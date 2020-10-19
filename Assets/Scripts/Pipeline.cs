@@ -8,11 +8,16 @@ public class Pipeline : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Model cube = new Model(Model.myShape.B);
+         Model modelB = new Model(Model.myShape.B);
 
-        CreateUnityGameObject(cube);
-        
-        
+        CreateUnityGameObject(modelB);
+
+        for(int i=0; i<modelB.bVertices.Count; i++)
+        {
+            print("Vertices" + modelB.bVertices[i]);
+        }
+
+      
     }
 
     // Update is called once per frame
@@ -41,9 +46,18 @@ public class Pipeline : MonoBehaviour
         {
             Vector3 normal_for_face = model.bFaceNormals[i / 3];
             normal_for_face = new Vector3(normal_for_face.x, normal_for_face.y, -normal_for_face.z);
-            coords.Add(model.bVertices[model.bIndexList[i]]); dummy_indices.Add(i); text_coords.Add(model.bTextureCoordinates[model.bTextureIndexList[i]]); normals.Add(normal_for_face);
-            coords.Add(model.bVertices[model.bIndexList[i + 1]]); dummy_indices.Add(i + 1); text_coords.Add(model.bTextureCoordinates[model.bTextureIndexList[i + 1]]); normals.Add(normal_for_face);
-            coords.Add(model.bVertices[model.bIndexList[i + 2]]); dummy_indices.Add(i + 2); text_coords.Add(model.bTextureCoordinates[model.bTextureIndexList[i + 2]]); normals.Add(normal_for_face);
+          // coords.Add(model.bVertices[model.bIndexList[i]]);
+            dummy_indices.Add(i); 
+            text_coords.Add(model.bTextureCoordinates[model.bTextureIndexList[i]]);
+            normals.Add(normal_for_face);
+           //  coords.Add(model.bVertices[model.bIndexList[i + 1]]);
+            dummy_indices.Add(i + 1);
+            text_coords.Add(model.bTextureCoordinates[model.bTextureIndexList[i + 1]]);
+            normals.Add(normal_for_face);
+          //  coords.Add(model.bVertices[model.bIndexList[i + 2]]); 
+            dummy_indices.Add(i + 2);
+            text_coords.Add(model.bTextureCoordinates[model.bTextureIndexList[i + 2]]);
+            normals.Add(normal_for_face);
         }
 
         mesh.vertices = coords.ToArray();
