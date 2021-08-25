@@ -9,7 +9,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{1F2A8590-ADEB-C1B9-1B54-88A029924399}</ProjectGuid>
+    <ProjectGuid>{8ED56F02-D618-1A3E-28A3-B537DB09C36E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -56,9 +56,9 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio Tools for Unity\16.0\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\Pipeline.cs" />
-    <Compile Include="Assets\Scripts\Model.cs" />
     <Compile Include="Assets\Scripts\Outcode.cs" />
+    <Compile Include="Assets\Scripts\Model.cs" />
+    <Compile Include="Assets\Scripts\Pipeline.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
