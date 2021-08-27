@@ -19,7 +19,7 @@ public class Model
         {
             case myShape.B:
                 initialise();
-                addCubeVertices();
+                addBVertices();
                 addBTextureCoordinates();
                 addBIndicesAndNormals();
 
@@ -103,7 +103,7 @@ public class Model
 
     private void addCubeTextureCoordinates()
     {
-        //cube
+        ////cube
         //bTextureCoordinates.Add(new Vector2(0.25f, 0));
         //bTextureCoordinates.Add(new Vector2(0.5f, 0));
         //bTextureCoordinates.Add(new Vector2(0f, 0.33333f));
@@ -124,63 +124,63 @@ public class Model
     {
         //new b
         //Front
-        bIndexList[0] = 0;
-        bIndexList[1] = 1;  bFaceNormals[0] = new Vector3(0,0,-1);
-        bIndexList[3] = 4;
+        bIndexList[0] = 0; bTextureIndexList[0] = 18;
+        bIndexList[1] = 1; bTextureIndexList[1] = 21; bFaceNormals[0] = new Vector3(0,0,-1);
+        bIndexList[2] = 4; bTextureIndexList[2] = 29;
 
-        bIndexList[4] = 1;
-        bIndexList[5] = 2; bFaceNormals[1] = new Vector3(0,0,-1);
-        bIndexList[6] = 4;
+        bIndexList[3] = 1; bTextureIndexList[3] = 21;
+        bIndexList[4] = 2; bTextureIndexList[4] = 24; bFaceNormals[1] = new Vector3(0,0,-1);
+        bIndexList[5] = 4; bTextureIndexList[5] = 29;
 
-        bIndexList[7] = 2;
-        bIndexList[8] = 3; bFaceNormals[2] = new Vector3(0,0,-1);
-        bIndexList[9] = 4;
+        bIndexList[6] = 2; bTextureIndexList[6] = 24;
+        bIndexList[7] = 3; bTextureIndexList[7] = 28; bFaceNormals[2] = new Vector3(0,0,-1);
+        bIndexList[8] = 4; bTextureIndexList[8] = 29;
 
-        bIndexList[10] = 0;
-        bIndexList[11] = 4; bFaceNormals[3] = new Vector3(0,0,-1);
-        bIndexList[12] = 5;
+        bIndexList[9] = 0; bTextureIndexList[9] = 18;
+        bIndexList[10] = 4; bTextureIndexList[10] = 29; bTextureIndexList[0] = 18; bFaceNormals[3] = new Vector3(0,0,-1);
+        bIndexList[11] = 5; bTextureIndexList[11] = 6;
 
-        bIndexList[13] = 5;
-        bIndexList[14] = 6; bFaceNormals[4] = new Vector3(0, 0, -1);
-        bIndexList[15] = 7;
+        bIndexList[12] = 5; bTextureIndexList[12] = 6;
+        bIndexList[13] = 6; bTextureIndexList[13] = 5; bFaceNormals[4] = new Vector3(0, 0, -1);
+        bIndexList[14] = 7; bTextureIndexList[14] = 10;
 
-        bIndexList[16] = 5;
-        bIndexList[17] = 7; bFaceNormals[5] = new Vector3(0, 0, -1);
-        bIndexList[18] = 8;
+        bIndexList[15] = 5; bTextureIndexList[15] = 6;
+        bIndexList[16] = 7; bTextureIndexList[16] = 10; bFaceNormals[5] = new Vector3(0, 0, -1);
+        bIndexList[17] = 8; bTextureIndexList[17] = 13;
 
-        bIndexList[19] = 5;
-        bIndexList[20] = 8; bFaceNormals[6] = new Vector3(0, 0, -1);
-        bIndexList[21] = 0;
+        bIndexList[18] = 5; bTextureIndexList[18] = 6;
+        bIndexList[19] = 8; bTextureIndexList[19] = 13; bFaceNormals[6] = new Vector3(0, 0, -1);
+        bIndexList[20] = 0; bTextureIndexList[20] = 18;
 
 
         //Back
-        bIndexList[22] = 9;
-        bIndexList[23] = 10; bFaceNormals[7] = new Vector3(0, 0, 1);
-        bIndexList[24] = 13;
+        bIndexList[21] = 9; bTextureIndexList[21] = 19;
+        bIndexList[22] = 10; bTextureIndexList[22] = 22; bFaceNormals[7] = new Vector3(0, 0, 1);
+        bIndexList[23] = 13; bTextureIndexList[23] = 30;
 
-        bIndexList[25] = 10;
-        bIndexList[26] = 11; bFaceNormals[8] = new Vector3(0, 0, 1);
-        bIndexList[27] = 13;
+        bIndexList[24] = 10; bTextureIndexList[24] = 22;
+        bIndexList[25] = 11; bTextureIndexList[25] = 25; bFaceNormals[8] = new Vector3(0, 0, 1);
+        bIndexList[26] = 13; bTextureIndexList[26] = 30;
 
-        bIndexList[28] = 11;
-        bIndexList[29] = 12; bFaceNormals[9] = new Vector3(0, 0, 1);
-        bIndexList[30] = 13;
+        bIndexList[27] = 11; bTextureIndexList[27] = 25;
+        bIndexList[28] = 12; bTextureIndexList[28] = 31; bFaceNormals[9] = new Vector3(0, 0, 1);
+        bIndexList[29] = 13; bTextureIndexList[29] = 30;
 
-        bIndexList[31] = 9;
-        bIndexList[32] = 13; bFaceNormals[10] = new Vector3(0, 0, 1);
-        bIndexList[33] = 14;
+        bIndexList[30] = 9; bTextureIndexList[30] = 19;
+        bIndexList[31] = 13; bTextureIndexList[31] = 30; bFaceNormals[10] = new Vector3(0, 0, 1);
+        bIndexList[32] = 14; bTextureIndexList[32] = 7;
 
-        bIndexList[34] = 14;
-        bIndexList[35] = 15; bFaceNormals[11] = new Vector3(0, 0, 1);
-        bIndexList[36] = 16;
+        bIndexList[33] = 14; bTextureIndexList[33] = 7;
+        bIndexList[34] = 15; bTextureIndexList[34] = 8; bFaceNormals[11] = new Vector3(0, 0, 1);
+        bIndexList[35] = 16; bTextureIndexList[35] = 11;
 
-        bIndexList[36] = 14;
-        bIndexList[37] = 16; bFaceNormals[12] = new Vector3(0, 0, 1);
-        bIndexList[38] = 17;
+        bIndexList[36] = 14; bTextureIndexList[36] = 7;
+        bIndexList[37] = 16; bTextureIndexList[37] = 11; bFaceNormals[12] = new Vector3(0, 0, 1);
+        bIndexList[38] = 17; bTextureIndexList[38] = 14;
 
-        bIndexList[39] = 14;
-        bIndexList[40] = 17; bFaceNormals[13] = new Vector3(0, 0, 1);
-        bIndexList[41] = 9;
+        bIndexList[39] = 14; bTextureIndexList[39] = 7;
+        bIndexList[40] = 17; bTextureIndexList[40] = 14; bFaceNormals[13] = new Vector3(0, 0, 1);
+        bIndexList[41] = 9; bTextureIndexList[41] = 19;
 
         //Top
         bIndexList[42] = 3;

@@ -8,14 +8,13 @@ public class Pipeline : MonoBehaviour
     private Vector3[] shapeVertices = new Vector3[18];
     private Vector3[] imageAfterRotation;
     private Vector3[] imageAfterTranslate;
-    private Vector3[] originalPoints;
     private Texture2D screen;
     private float angle;
     private Color defaultColour;
     public Light myLight;
     private static int screenWidth = Screen.width;
     private static int screenHeight = Screen.height;
-    private Renderer ourScreen;
+    private Renderer rendr;
     private Model myB = new Model(Model.myShape.B);
 
     // Start is called before the first frame update
@@ -23,10 +22,10 @@ public class Pipeline : MonoBehaviour
     {
         GameObject lightGO = new GameObject("The Light");
         myLight = lightGO.AddComponent<Light>();
-        ourScreen = FindObjectOfType<Renderer>();
+        rendr = FindObjectOfType<Renderer>();
         screen = new Texture2D(screenWidth, screenHeight);
         defaultColour = new Color(screen.GetPixel(1, 1).r, screen.GetPixel(1, 1).g, screen.GetPixel(1, 1).b, screen.GetPixel(1, 1).a);
-        ourScreen.material.mainTexture = screen;
+        rendr.material.mainTexture = screen;
 
         shapeVertices = myB.bVertices;
 
@@ -51,16 +50,14 @@ public class Pipeline : MonoBehaviour
     {
         Destroy(screen);
         screen = new Texture2D(screenWidth, screenHeight);
-        ourScreen.material.mainTexture = screen;
+        rendr.material.mainTexture = screen;
         angle += 2;
         Matrix4x4 persp = Matrix4x4.Perspective(45, 1.6f, 1, 1000);
         Matrix4x4 View = viewingMatrix(new Vector3(0, 0, 10), new Vector3(0, 0, 0), new Vector3(0, 1, 0));
         Matrix4x4 world = rotationMatrix(new Vector3(1, 1, 0), angle) /* * translateMatrix(new Vector3(2, 1, 3))*/;
-        Matrix4x4 overAll = persp * View * world;
+        Matrix4x4 all = persp * View * world;
 
-        //originalPoints = shapeVertices;
-
-        createShape(divide_by_z(MatrixTransform(shapeVertices, overAll)));
+        createShape(divide_by_z(MatrixTransform(shapeVertices, all)));
         screen.Apply();
     }
 
@@ -291,7 +288,7 @@ public class Pipeline : MonoBehaviour
         return imageAfterViewingMatrix;
     }
 
-    public Vector3[] applyTranslateMAtrix(Vector3[] shape)
+    public Vector3[] applyTranslationMatrix(Vector3[] shape)
     {
         Matrix4x4 transformMatrix = Matrix4x4.TRS(new Vector3(4, 3, 3), Quaternion.identity, Vector3.one);
 
@@ -319,14 +316,12 @@ public class Pipeline : MonoBehaviour
         {
             plot(screen, breshenhamLine(convertXY(start), convertXY(end)));
         }
-
     }
 
     private void plot(Texture2D screen, List<Vector2Int> list)
     {
         foreach (Vector2Int point in list)
             screen.SetPixel(point.x, point.y, Color.blue);
-
     }
 
     public static Vector2Int convertXY(Vector3 v)
@@ -336,41 +331,39 @@ public class Pipeline : MonoBehaviour
 
     public static bool lineClip(ref Vector2 v, ref Vector2 u)
     {
-
-        Outcode v_outcode = new Outcode(v);
-        Outcode u_outcode = new Outcode(u);
+        Outcode vOutcode = new Outcode(v);
+        Outcode uOutcode = new Outcode(u);
         Outcode inViewport = new Outcode();
-        if ((v_outcode + u_outcode) == inViewport)
+        if ((vOutcode + uOutcode) == inViewport)
             return true;
-        if ((v_outcode * u_outcode) != inViewport)
+        if ((vOutcode * uOutcode) != inViewport)
             return false;
 
-        if (v_outcode == inViewport)
+        if (vOutcode == inViewport)
             return lineClip(ref u, ref v);
 
-        // v must be outside viewport
-        if (v_outcode.up)
+        if (vOutcode.up)
         {
             v = intercept(u, v, 0);
             Outcode v2_outcode = new Outcode(v);
             if (v2_outcode == inViewport) return lineClip(ref u, ref v);
         }
 
-        if (v_outcode.down)
+        if (vOutcode.down)
         {
             v = intercept(u, v, 1);
             Outcode v2_outcode = new Outcode(v);
             if (v2_outcode == inViewport) return lineClip(ref u, ref v);
         }
 
-        if (v_outcode.left)
+        if (vOutcode.left)
         {
             v = intercept(u, v, 2);
             Outcode v2_outcode = new Outcode(v);
             if (v2_outcode == inViewport) return lineClip(ref u, ref v);
         }
 
-        if (v_outcode.right)
+        if (vOutcode.right)
         {
             v = intercept(u, v, 3);
             Outcode v2_outcode = new Outcode(v);
@@ -464,7 +457,6 @@ public class Pipeline : MonoBehaviour
 
     public static List<Vector2Int> swapXY(List<Vector2Int> list)
     {
-
         List<Vector2Int> outputList = new List<Vector2Int>();
 
         foreach (Vector2Int v in list)
