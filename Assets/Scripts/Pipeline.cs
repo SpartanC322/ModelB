@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class Pipeline : MonoBehaviour
@@ -14,7 +12,7 @@ public class Pipeline : MonoBehaviour
     public Light myLight;
     private static int screenWidth = Screen.width;
     private static int screenHeight = Screen.height;
-    private Renderer rendr;
+    private Renderer myScreen;
     private Model myB = new Model(Model.myShape.B);
 
     // Start is called before the first frame update
@@ -22,10 +20,10 @@ public class Pipeline : MonoBehaviour
     {
         GameObject lightGO = new GameObject("The Light");
         myLight = lightGO.AddComponent<Light>();
-        rendr = FindObjectOfType<Renderer>();
+        myScreen = FindObjectOfType<Renderer>();
         screen = new Texture2D(screenWidth, screenHeight);
         defaultColour = new Color(screen.GetPixel(1, 1).r, screen.GetPixel(1, 1).g, screen.GetPixel(1, 1).b, screen.GetPixel(1, 1).a);
-        rendr.material.mainTexture = screen;
+        myScreen.material.mainTexture = screen;
 
         shapeVertices = myB.bVertices;
 
@@ -48,126 +46,189 @@ public class Pipeline : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Destroy(screen);
         screen = new Texture2D(screenWidth, screenHeight);
-        rendr.material.mainTexture = screen;
-        angle += 2;
-        Matrix4x4 persp = Matrix4x4.Perspective(45, 1.6f, 1, 1000);
-        Matrix4x4 View = viewingMatrix(new Vector3(0, 0, 10), new Vector3(0, 0, 0), new Vector3(0, 1, 0));
-        Matrix4x4 world = rotationMatrix(new Vector3(1, 1, 0), angle) /* * translateMatrix(new Vector3(2, 1, 3))*/;
-        Matrix4x4 all = persp * View * world;
+        myScreen.material.mainTexture = screen;
+        angle += 5;
 
-        createShape(divide_by_z(MatrixTransform(shapeVertices, all)));
+        Matrix4x4 persp = Matrix4x4.Perspective(90, 2, 1, 10000);
+        Matrix4x4 view = ViewingMatrix(new Vector3(1, 0, 10), new Vector3(0, 0, 10), new Vector3(0, 1, 0));
+        Matrix4x4 world = RotationMatrix(new Vector3(0.5f, 1, 0), angle);
+        Matrix4x4 all = persp * view * world;
+
+        CreateShape(DivideZ(MatrixTransform(shapeVertices, all)));
         screen.Apply();
     }
 
-    private Matrix4x4 translateMatrix(Vector3 v)
-    {
-        return Matrix4x4.TRS(v, Quaternion.identity, Vector3.one);
-    }
-    private Matrix4x4 rotationMatrix(Vector3 axis, float angle)
+    private Matrix4x4 RotationMatrix(Vector3 axis, float angle)
     {
         Quaternion rotation = Quaternion.AngleAxis(angle, axis.normalized);
 
-        return Matrix4x4.TRS(new Vector3(0, 0, 0), rotation, Vector3.one);
+        return Matrix4x4.TRS(Vector3.zero, rotation, Vector3.one);
     }
 
-    private Matrix4x4 viewingMatrix(Vector3 positionOfCamera, Vector3 target, Vector3 up)
+    private Matrix4x4 ScalingMatrix(Vector3 scale)
     {
-        return Matrix4x4.TRS(-positionOfCamera, Quaternion.LookRotation(target - positionOfCamera, up.normalized), Vector3.one);
+        return Matrix4x4.TRS(Vector3.zero, Quaternion.identity, scale);
     }
 
-    private Vector3[] applyRotationMatrix(Vector3[] shape)
+    private Matrix4x4 ViewingMatrix(Vector3 camera, Vector3 target, Vector3 up)
     {
-        Vector3 startingAxis = new Vector3(40, 40, 40);
-        startingAxis.Normalize();
-        Quaternion rotation = Quaternion.AngleAxis(2, startingAxis);
-        Matrix4x4 rotationMatrix = Matrix4x4.TRS(new Vector3(40, 20, 30), rotation, Vector3.one);
-
-        //printMatrix(rotationMatrix);
-
-        Vector3[] imageAfterRotation = MatrixTransform(shape, rotationMatrix);
-
-        return imageAfterRotation;
+        return Matrix4x4.TRS(-camera, Quaternion.LookRotation(target - camera, up.normalized), Vector3.one);
     }
 
-    private void createShape(Vector3[] shape)
+    private void CreateShape(Vector3[] shape)
     {
         //Front
-        createFace(shape[0], shape[1], shape[4]);
+        CreateFace(shape[myB.bIndexList[0]], shape[myB.bIndexList[1]], shape[myB.bIndexList[2]]);
 
-        createFace(shape[1], shape[2], shape[4]);
+        CreateFace(shape[myB.bIndexList[3]], shape[myB.bIndexList[4]], shape[myB.bIndexList[5]]);
 
-        createFace(shape[2], shape[3], shape[4]);
+        CreateFace(shape[myB.bIndexList[6]], shape[myB.bIndexList[7]], shape[myB.bIndexList[8]]);
 
-        createFace(shape[0], shape[4], shape[5]);
+        CreateFace(shape[myB.bIndexList[9]], shape[myB.bIndexList[10]], shape[myB.bIndexList[11]]);
 
-        createFace(shape[5], shape[6], shape[7]);
+        CreateFace(shape[myB.bIndexList[12]], shape[myB.bIndexList[13]], shape[myB.bIndexList[14]]);
 
-        createFace(shape[5], shape[7], shape[8]);
+        CreateFace(shape[myB.bIndexList[15]], shape[myB.bIndexList[16]], shape[myB.bIndexList[17]]);
 
-        createFace(shape[5], shape[8], shape[0]);
+        CreateFace(shape[myB.bIndexList[18]], shape[myB.bIndexList[19]], shape[myB.bIndexList[20]]);
 
 
         //Back
-        createFace(shape[9], shape[10], shape[13]);
+        CreateFace(shape[myB.bIndexList[21]], shape[myB.bIndexList[22]], shape[myB.bIndexList[23]]);
 
-        createFace(shape[10], shape[11], shape[13]);
+        CreateFace(shape[myB.bIndexList[24]], shape[myB.bIndexList[25]], shape[myB.bIndexList[26]]);
 
-        createFace(shape[11], shape[12], shape[13]);
+        CreateFace(shape[myB.bIndexList[27]], shape[myB.bIndexList[28]], shape[myB.bIndexList[29]]);
 
-        createFace(shape[9], shape[13], shape[14]);
+        CreateFace(shape[myB.bIndexList[30]], shape[myB.bIndexList[31]], shape[myB.bIndexList[32]]);
 
-        createFace(shape[14], shape[15], shape[16]);
+        CreateFace(shape[myB.bIndexList[33]], shape[myB.bIndexList[34]], shape[myB.bIndexList[35]]);
 
-        createFace(shape[14], shape[16], shape[17]);
+        CreateFace(shape[myB.bIndexList[36]], shape[myB.bIndexList[37]], shape[myB.bIndexList[28]]);
 
-        createFace(shape[14], shape[17], shape[9]);
+        CreateFace(shape[myB.bIndexList[39]], shape[myB.bIndexList[40]], shape[myB.bIndexList[41]]);
 
         //Top
-        createFace(shape[3], shape[12], shape[13]);
+        CreateFace(shape[myB.bIndexList[42]], shape[myB.bIndexList[43]], shape[myB.bIndexList[44]]);
 
-        createFace(shape[13], shape[4], shape[3]);
+        CreateFace(shape[myB.bIndexList[45]], shape[myB.bIndexList[46]], shape[myB.bIndexList[47]]);
 
         //Bottom
-        createFace(shape[5], shape[14], shape[15]);
+        CreateFace(shape[myB.bIndexList[48]], shape[myB.bIndexList[49]], shape[myB.bIndexList[50]]);
 
-        createFace(shape[15], shape[6], shape[5]);
+        CreateFace(shape[myB.bIndexList[51]], shape[myB.bIndexList[52]], shape[myB.bIndexList[53]]);
 
         //Left
-        createFace(shape[4], shape[13], shape[14]);
+        CreateFace(shape[myB.bIndexList[54]], shape[myB.bIndexList[55]], shape[myB.bIndexList[56]]);
 
-        createFace(shape[14], shape[5], shape[4]);
+        CreateFace(shape[myB.bIndexList[57]], shape[myB.bIndexList[58]], shape[myB.bIndexList[59]]);
 
         //Right centre top
-        createFace(shape[0], shape[9], shape[10]);
+        CreateFace(shape[myB.bIndexList[60]], shape[myB.bIndexList[61]], shape[myB.bIndexList[62]]);
 
-        createFace(shape[10], shape[1], shape[0]);
+        CreateFace(shape[myB.bIndexList[63]], shape[myB.bIndexList[64]], shape[myB.bIndexList[65]]);
 
         //Right middle top
-        createFace(shape[1], shape[10], shape[11]);
+        CreateFace(shape[myB.bIndexList[66]], shape[myB.bIndexList[67]], shape[myB.bIndexList[68]]);
 
-        createFace(shape[11], shape[2], shape[1]);
+        CreateFace(shape[myB.bIndexList[69]], shape[myB.bIndexList[70]], shape[myB.bIndexList[71]]);
 
         //Right upper top
-        createFace(shape[2], shape[11], shape[12]);
+        CreateFace(shape[myB.bIndexList[72]], shape[myB.bIndexList[73]], shape[myB.bIndexList[74]]);
 
-        createFace(shape[12], shape[3], shape[2]);
+        CreateFace(shape[myB.bIndexList[75]], shape[myB.bIndexList[76]], shape[myB.bIndexList[77]]);
 
         //Right centre bottom
-        createFace(shape[8], shape[17], shape[9]);
+        CreateFace(shape[myB.bIndexList[78]], shape[myB.bIndexList[79]], shape[myB.bIndexList[80]]);
 
-        createFace(shape[9], shape[0], shape[8]);
+        CreateFace(shape[myB.bIndexList[81]], shape[myB.bIndexList[82]], shape[myB.bIndexList[83]]);
 
         //Right middle bottom
-        createFace(shape[7], shape[16], shape[17]);
+        CreateFace(shape[myB.bIndexList[84]], shape[myB.bIndexList[85]], shape[myB.bIndexList[86]]);
 
-        createFace(shape[17], shape[8], shape[7]);
+        CreateFace(shape[myB.bIndexList[87]], shape[myB.bIndexList[88]], shape[myB.bIndexList[89]]);
 
         //Right lower bottom
-        createFace(shape[6], shape[15], shape[16]);
+        CreateFace(shape[myB.bIndexList[90]], shape[myB.bIndexList[91]], shape[myB.bIndexList[92]]);
 
-        createFace(shape[16], shape[7], shape[6]);
+        CreateFace(shape[myB.bIndexList[93]], shape[myB.bIndexList[94]], shape[myB.bIndexList[95]]);
+
+        ////Front
+        //CreateFace(shape[0], shape[1], shape[4]);
+
+        //CreateFace(shape[1], shape[2], shape[4]);
+
+        //CreateFace(shape[2], shape[3], shape[4]);
+
+        //CreateFace(shape[0], shape[4], shape[5]);
+
+        //CreateFace(shape[5], shape[6], shape[7]);
+
+        //CreateFace(shape[5], shape[7], shape[8]);
+
+        //CreateFace(shape[5], shape[8], shape[0]);
+
+
+        ////Back
+        //CreateFace(shape[9], shape[10], shape[13]);
+
+        //CreateFace(shape[10], shape[11], shape[13]);
+
+        //CreateFace(shape[11], shape[12], shape[13]);
+
+        //CreateFace(shape[9], shape[13], shape[14]);
+
+        //CreateFace(shape[14], shape[15], shape[16]);
+
+        //CreateFace(shape[14], shape[16], shape[17]);
+
+        //CreateFace(shape[14], shape[17], shape[9]);
+
+        ////Top
+        //CreateFace(shape[3], shape[12], shape[13]);
+
+        //CreateFace(shape[13], shape[4], shape[3]);
+
+        ////Bottom
+        //CreateFace(shape[5], shape[14], shape[15]);
+
+        //CreateFace(shape[15], shape[6], shape[5]);
+
+        ////Left
+        //CreateFace(shape[4], shape[13], shape[14]);
+
+        //CreateFace(shape[14], shape[5], shape[4]);
+
+        ////Right centre top
+        //CreateFace(shape[0], shape[9], shape[10]);
+
+        //CreateFace(shape[10], shape[1], shape[0]);
+
+        ////Right middle top
+        //CreateFace(shape[1], shape[10], shape[11]);
+
+        //CreateFace(shape[11], shape[2], shape[1]);
+
+        ////Right upper top
+        //CreateFace(shape[2], shape[11], shape[12]);
+
+        //CreateFace(shape[12], shape[3], shape[2]);
+
+        ////Right centre bottom
+        //CreateFace(shape[8], shape[17], shape[9]);
+
+        //CreateFace(shape[9], shape[0], shape[8]);
+
+        ////Right middle bottom
+        //CreateFace(shape[7], shape[16], shape[17]);
+
+        //CreateFace(shape[17], shape[8], shape[7]);
+
+        ////Right lower bottom
+        //CreateFace(shape[6], shape[15], shape[16]);
+
+        //CreateFace(shape[16], shape[7], shape[6]);
     }
 
     public Vector3 getVectorNormal(Vector2 a, Vector2 b, Vector2 c)
@@ -180,27 +241,24 @@ public class Pipeline : MonoBehaviour
         return Vector3.Normalize((center - myLight.transform.position));
     }
 
-    public void createFace(Vector2 i, Vector2 j, Vector2 k)
+    public void CreateFace(Vector2 i, Vector2 j, Vector2 k)
     {
-        float z = (j.x - i.x) * (k.y - j.y) - (j.y - i.y) * (k.x - j.x);
+        float dotProduct = (j.x - i.x) * (k.y - j.y) - (j.y - i.y) * (k.x - j.x);
 
-        if (z >= 0)
+        if (dotProduct > 0)
         {
-            drawLine(i, j, screen);
-            drawLine(j, k, screen);
-            drawLine(k, i, screen);
+            Vector2 center = GetCenter(i, j, k);
+            center = ConvertXY(center);
 
-            Vector2 center = getCenter(i, j, k);
-            center = convertXY(center);
-            Vector3 normal = getVectorNormal(i, j, k);
-            Vector3 lightDirection = getLightDirection(center);
-            float dotProduct = Vector3.Dot(lightDirection, normal);
-            //Color reflection = new Color(dotProduct * Color.yellow.r * light.intensity, dotProduct * Color.yellow.g * light.intensity, dotProduct * Color.yellow.b * light.intensity, 1);
-            floodFillStack((int)center.x, (int)center.y, Color.yellow, defaultColour);
+            CreateLine(i, j, screen);
+            CreateLine(j, k, screen);
+            CreateLine(k, i, screen);
+
+            FillStack((int)center.x, (int)center.y, Color.green, defaultColour);
         }
     }
 
-    public void floodFill(int x, int y, Color newColour, Color oldColour, Texture2D screen)
+    public void FloodFill(int x, int y, Color newColour, Color oldColour, Texture2D screen)
     {
 
         if ((x < 0) || (x >= screenWidth))
@@ -221,41 +279,41 @@ public class Pipeline : MonoBehaviour
         else
         {
             screen.SetPixel(x, y, newColour);
-            floodFill(x + 1, y, newColour, oldColour, screen);
-            floodFill(x, y + 1, newColour, oldColour, screen);
-            floodFill(x - 1, y, newColour, oldColour, screen);
-            floodFill(x, y - 1, newColour, oldColour, screen);
+            FloodFill(x + 1, y, newColour, oldColour, screen);
+            FloodFill(x, y + 1, newColour, oldColour, screen);
+            FloodFill(x - 1, y, newColour, oldColour, screen);
+            FloodFill(x, y - 1, newColour, oldColour, screen);
         }
     }
 
-    private void floodFillStack(int x, int y, Color newColour, Color oldColour)
+    private void FillStack(int x, int y, Color newColour, Color oldColour)
     {
-        Stack<Vector2> pixels = new Stack<Vector2>();
-        pixels.Push(new Vector2(x, y));
+        Stack<Vector2> pixelStack = new Stack<Vector2>();
+        pixelStack.Push(new Vector2(x, y));
    
-        while (pixels.Count > 0)
+        while (pixelStack.Count > 0)
         {
-            Vector2 p = pixels.Pop();
-            if (checkBounds(p))
+            Vector2 pixel = pixelStack.Pop();
+            if (CheckBounds(pixel))
             {
-                if (screen.GetPixel((int)p.x, (int)p.y) == oldColour)
+                if (screen.GetPixel((int)pixel.x, (int)pixel.y) == oldColour)
                 {
-                    screen.SetPixel((int)p.x, (int)p.y, newColour);
-                    pixels.Push(new Vector2(p.x + 1, p.y));
-                    pixels.Push(new Vector2(p.x - 1, p.y));
-                    pixels.Push(new Vector2(p.x, p.y + 1));
-                    pixels.Push(new Vector2(p.x, p.y - 1));
+                    screen.SetPixel((int)pixel.x, (int)pixel.y, newColour);
+                    pixelStack.Push(new Vector2(pixel.x + 1, pixel.y));
+                    pixelStack.Push(new Vector2(pixel.x - 1, pixel.y));
+                    pixelStack.Push(new Vector2(pixel.x, pixel.y + 1));
+                    pixelStack.Push(new Vector2(pixel.x, pixel.y - 1));
                 }
             }
         }
     }
 
-    private Vector2 getCenter(Vector2 p1, Vector2 p2, Vector2 p3)
+    private Vector2 GetCenter(Vector2 point1, Vector2 point2, Vector2 point3)
     {
-        return new Vector2((p1.x + p2.x + p3.x) / 3, (p1.y + p2.y + p3.y) / 3);
+        return new Vector2((point1.x + point2.x + point3.x) / 3, (point1.y + point2.y + point3.y) / 3);
     }
 
-    public bool checkBounds(Vector2 pixel)
+    public bool CheckBounds(Vector2 pixel)
     {
         if ((pixel.x < 0) || (pixel.x >= screenWidth - 1))
         {
@@ -270,7 +328,7 @@ public class Pipeline : MonoBehaviour
         return true;
     }
 
-    private Vector3[] applyProjectionMatrix(Vector3[] imageAfterViewingMatrix)
+    private Vector3[] ApplyProjectionMatrix(Vector3[] imageAfterViewingMatrix)
     {
         Matrix4x4 projectionMatrix = Matrix4x4.Perspective(45, 1.6f, 1, 1000);
 
@@ -279,7 +337,7 @@ public class Pipeline : MonoBehaviour
         return imageAfterProjection;
     }
 
-    private Vector3[] applyViewingMatrix(Vector3[] shape)
+    private Vector3[] ApplyViewingMatrix(Vector3[] shape)
     {
         Matrix4x4 viewingMatrix = Matrix4x4.TRS(new Vector3(0, 0, 10), Quaternion.LookRotation(new Vector3(0, 0, 0) - new Vector3(0, 0, 10), new Vector3(0, 1, 0).normalized), Vector3.one);
 
@@ -288,7 +346,7 @@ public class Pipeline : MonoBehaviour
         return imageAfterViewingMatrix;
     }
 
-    public Vector3[] applyTranslationMatrix(Vector3[] shape)
+    public Vector3[] ApplyTranslationMatrix(Vector3[] shape)
     {
         Matrix4x4 transformMatrix = Matrix4x4.TRS(new Vector3(4, 3, 3), Quaternion.identity, Vector3.one);
 
@@ -297,7 +355,18 @@ public class Pipeline : MonoBehaviour
         return imageAfterTranslate;
     }
 
-    private Vector3[] divide_by_z(Vector3[] shape)
+    private Vector3[] MatrixTransform(Vector3[] meshVertices, Matrix4x4 transformMatrix)
+    {
+        Vector3[] output = new Vector3[meshVertices.Length];
+        for (int i = 0; i < meshVertices.Length; i++)
+        {
+            output[i] = transformMatrix * new Vector4(meshVertices[i].x, meshVertices[i].y, meshVertices[i].z, 1);
+        }
+
+        return output;
+    }
+
+    private Vector3[] DivideZ(Vector3[] shape)
     {
         List<Vector3> output = new List<Vector3>();
         foreach (Vector3 v in shape)
@@ -308,72 +377,80 @@ public class Pipeline : MonoBehaviour
         return output.ToArray();
     }
 
-    private void drawLine(Vector2 v1, Vector2 v2, Texture2D screen)
+    private void CreateLine(Vector2 v1, Vector2 v2, Texture2D screen)
     {
         Vector2 start = v1, end = v2;
 
-        if (lineClip(ref start, ref end))
+        if (LineClip(ref start, ref end))
         {
-            plot(screen, breshenhamLine(convertXY(start), convertXY(end)));
+            Plot(screen, BreshenhamLine(ConvertXY(start), ConvertXY(end)));
         }
     }
 
-    private void plot(Texture2D screen, List<Vector2Int> list)
+    private void Plot(Texture2D screen, List<Vector2Int> list)
     {
         foreach (Vector2Int point in list)
             screen.SetPixel(point.x, point.y, Color.blue);
     }
 
-    public static Vector2Int convertXY(Vector3 v)
+    public static Vector2Int ConvertXY(Vector3 v)
     {
         return new Vector2Int((int)((v.x + 1.0f) * (screenWidth - 1) / 2.0f), (int)((1.0f - v.y) * (screenHeight - 1) / 2.0f));
     }
 
-    public static bool lineClip(ref Vector2 v, ref Vector2 u)
+    public static bool LineClip(ref Vector2 v, ref Vector2 u)
     {
         Outcode vOutcode = new Outcode(v);
         Outcode uOutcode = new Outcode(u);
-        Outcode inViewport = new Outcode();
-        if ((vOutcode + uOutcode) == inViewport)
-            return true;
-        if ((vOutcode * uOutcode) != inViewport)
-            return false;
+        Outcode inView = new Outcode();
 
-        if (vOutcode == inViewport)
-            return lineClip(ref u, ref v);
+        if ((vOutcode + uOutcode) == inView)
+        {
+            return true;
+        }
+
+        if ((vOutcode * uOutcode) != inView)
+        {
+            return false;
+        }
+
+        if (vOutcode == inView)
+        {
+            return LineClip(ref u, ref v);
+        }
 
         if (vOutcode.up)
         {
-            v = intercept(u, v, 0);
+            v = InterceptOf(u, v, 0);
             Outcode v2_outcode = new Outcode(v);
-            if (v2_outcode == inViewport) return lineClip(ref u, ref v);
+            if (v2_outcode == inView) return LineClip(ref u, ref v);
         }
 
         if (vOutcode.down)
         {
-            v = intercept(u, v, 1);
+            v = InterceptOf(u, v, 1);
             Outcode v2_outcode = new Outcode(v);
-            if (v2_outcode == inViewport) return lineClip(ref u, ref v);
+            if (v2_outcode == inView) return LineClip(ref u, ref v);
         }
 
         if (vOutcode.left)
         {
-            v = intercept(u, v, 2);
+            v = InterceptOf(u, v, 2);
             Outcode v2_outcode = new Outcode(v);
-            if (v2_outcode == inViewport) return lineClip(ref u, ref v);
+            if (v2_outcode == inView) return LineClip(ref u, ref v);
         }
 
         if (vOutcode.right)
         {
-            v = intercept(u, v, 3);
+            v = InterceptOf(u, v, 3);
             Outcode v2_outcode = new Outcode(v);
-            if (v2_outcode == inViewport) return lineClip(ref u, ref v);
+            if (v2_outcode == inView) return LineClip(ref u, ref v);
         }
 
         return false;
     }
 
-    private static Vector2 intercept(Vector2 u, Vector2 v, int edge)
+    private static Vector2 InterceptOf(Vector2 u, Vector2 v, int edge)
     {
         float m = (v.y - u.y) / (v.x - u.x);
 
@@ -381,10 +458,12 @@ public class Pipeline : MonoBehaviour
         {
             return new Vector2(u.x + (1 / m) * (1 - u.y), 1);
         }
+
         if (edge == 1)
         {
             return new Vector2(u.x + (1 / m) * (-1 - u.y), -1);
         }
+
         if (edge == 2)
         {
             return new Vector2(-1, u.y + m * (-1 - u.x));
@@ -393,7 +472,7 @@ public class Pipeline : MonoBehaviour
         return new Vector2(1, u.y + m * (1 - u.x));
     }
 
-    public static List<Vector2Int> breshenhamLine(Vector2Int start, Vector2Int finish)
+    public static List<Vector2Int> BreshenhamLine(Vector2Int start, Vector2Int finish)
     {
         List<Vector2Int> breshenhamList = new List<Vector2Int>();
 
@@ -405,17 +484,17 @@ public class Pipeline : MonoBehaviour
 
         if (dX < 0)
         {
-            return breshenhamLine(finish, start);
+            return BreshenhamLine(finish, start);
         }
 
         if (dY < 0)
         {
-            return negativeY(breshenhamLine(negativeY(start), negativeY(finish)));
+            return NegativeY(BreshenhamLine(MakeNegative(start), MakeNegative(finish)));
         }
 
         if (dY > dX)
         {
-            return swapXY(breshenhamLine(swapXY(start), swapXY(finish)));
+            return SwapXY(BreshenhamLine(SwapXWithY(start), SwapXWithY(finish)));
         }
 
         int y = start.y;
@@ -438,50 +517,37 @@ public class Pipeline : MonoBehaviour
         return breshenhamList;
     }
 
-    public static List<Vector2Int> negativeY(List<Vector2Int> yValues)
+    public static List<Vector2Int> NegativeY(List<Vector2Int> yValues)
     {
         List<Vector2Int> outputList = new List<Vector2Int>();
 
         foreach (Vector2Int v in yValues)
         {
-            outputList.Add(negativeY(v));
+            outputList.Add(MakeNegative(v));
         }
 
         return outputList;
     }
 
-    public static Vector2Int negativeY(Vector2Int point)
+    public static Vector2Int MakeNegative(Vector2Int point)
     {
         return new Vector2Int(point.x, point.y * -1);
     }
 
-    public static List<Vector2Int> swapXY(List<Vector2Int> list)
+    public static List<Vector2Int> SwapXY(List<Vector2Int> list)
     {
         List<Vector2Int> outputList = new List<Vector2Int>();
 
         foreach (Vector2Int v in list)
         {
-            outputList.Add(swapXY(v));
+            outputList.Add(SwapXWithY(v));
         }
 
         return outputList;
     }
 
-    public static Vector2Int swapXY(Vector2Int value)
+    public static Vector2Int SwapXWithY(Vector2Int value)
     {
         return new Vector2Int(value.y, value.x);
-    }
-
-    private Vector3[] MatrixTransform(
-        Vector3[] meshVertices,
-        Matrix4x4 transformMatrix)
-    {
-        Vector3[] output = new Vector3[meshVertices.Length];
-        for (int i = 0; i < meshVertices.Length; i++)
-        {
-            output[i] = transformMatrix * new Vector4(meshVertices[i].x, meshVertices[i].y, meshVertices[i].z, 1);
-        }
-
-        return output;
     }
 }
