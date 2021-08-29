@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class Pipeline : MonoBehaviour
 {
-    private Vector3[] shapeVertices = new Vector3[18];
-    private Vector3[] imageAfterRotation;
-    private Vector3[] imageAfterTranslate;
+    Matrix4x4 translation, rotation, scale, viewing, projection;
+    private Vector3[] shapeVertices = new Vector3[18], imageAfterTranslate, imageAfterRotation, original;
     private Texture2D screen;
     private float angle;
     private Color defaultColour;
@@ -25,22 +25,43 @@ public class Pipeline : MonoBehaviour
         defaultColour = new Color(screen.GetPixel(1, 1).r, screen.GetPixel(1, 1).g, screen.GetPixel(1, 1).b, screen.GetPixel(1, 1).a);
         myScreen.material.mainTexture = screen;
 
+        //CreateUnityGameObject(myB);
+
         shapeVertices = myB.bVertices;
 
-        foreach (var item in shapeVertices)
+        Matrix4x4 rotationMatrix = Matrix4x4.Rotate(Quaternion.AngleAxis(32, (new Vector3(1, 2, 3)).normalized));
+
+        WriteMatrixToFile(rotationMatrix, "rotationMatrix");
+
+        Vector3[] imageAfterRotation = new Vector3[100];
+
+        imageAfterRotation = findImageOf(shapeVertices, rotationMatrix);
+
+        foreach (var item in imageAfterRotation)
         {
             Debug.Log(item.ToString());
         }
 
-        //Vector3[] imageAfterViewingMatrix = applyViewingMatrix(cube);
+        WriteVerticesToFile(imageAfterRotation, "rotatedImage");
 
-        //Vector3[] cubeAfterProjectionMatrix = applyProjectionMatrix(imageAfterViewingMatrix);
+        Matrix4x4 scaleMatrix = Matrix4x4.Scale(new Vector3(2, 3, 4));
 
-        //cubeAfterProjectionMatrix = applyTranslateMAtrix(cubeAfterProjectionMatrix);
+        WriteMatrixToFile(scaleMatrix, "scaleMatrix");
 
-        //imageAfterRotation = applyRotationMatrix(cubeAfterProjectionMatrix);
+        Vector3[] imageAfterScale = findImageOf(imageAfterRotation, scaleMatrix);
 
-        //cubeAfterProjectionMatrix = divide_by_z(cubeAfterProjectionMatrix);
+        Matrix4x4 translationMatrix = Matrix4x4.Translate(new Vector3(4, 2, 3));
+
+        WriteMatrixToFile(translationMatrix, "translationMatrix");
+
+        Vector3[] imageAfterTranslation = findImageOf(imageAfterScale, translationMatrix);
+
+        Matrix4x4 matrixOfTransformations = rotationMatrix * scale * translationMatrix;
+
+        //foreach (var item in shapeVertices)
+        //{
+        //    Debug.Log(item.ToString());
+        //}
     }
 
     // Update is called once per frame
@@ -50,13 +71,74 @@ public class Pipeline : MonoBehaviour
         myScreen.material.mainTexture = screen;
         angle += 5;
 
-        Matrix4x4 persp = Matrix4x4.Perspective(90, 2, 1, 10000);
-        Matrix4x4 view = ViewingMatrix(new Vector3(1, 0, 10), new Vector3(0, 0, 10), new Vector3(0, 1, 0));
-        Matrix4x4 world = RotationMatrix(new Vector3(0.5f, 1, 0), angle);
-        Matrix4x4 all = persp * view * world;
+        Matrix4x4 perspMatrix = Matrix4x4.Perspective(90, 1, 1, 100);
+        Matrix4x4 viewMatrix = ViewingMatrix(new Vector3(1, 0, 10), new Vector3(0, 0, 20), new Vector3(0, 1, 0));
+        Matrix4x4 worldMatrix = RotationMatrix(new Vector3(0.5f, 0.5f, 0), angle);
+        Matrix4x4 allMatrix = perspMatrix * viewMatrix * worldMatrix;
 
-        CreateShape(DivideZ(MatrixTransform(shapeVertices, all)));
+        CreateShape(DivideZ(MatrixTransform(shapeVertices, allMatrix)));
         screen.Apply();
+    }
+
+    private Vector3[] findImageOf(Vector3[] vertices, Matrix4x4 matrixOfTransform)
+    {
+        Vector3[] newImage = new Vector3[18];
+        int i = 0;
+        foreach (Vector3 v in vertices)
+        {
+            newImage[i] = matrixOfTransform * v;
+        }
+
+        return newImage;
+    }
+
+
+    void WriteVerticesToFile(Vector3[] vertices, string txt)
+    {
+        using (TextWriter tw = new StreamWriter(txt + ".txt"))
+        {
+            foreach (Vector3 s in vertices)
+                tw.WriteLine(s);
+        }
+    }
+
+    void WriteMatrixToFile(Matrix4x4 matrix, string txt)
+    {
+        using (TextWriter tw = new StreamWriter(txt + ".txt"))
+        {
+            tw.WriteLine(matrix);
+        }
+    }
+
+    public GameObject CreateUnityGameObject(Model model)
+    {
+        Mesh mesh = new Mesh();
+        GameObject newGO = new GameObject();
+        MeshFilter meshFilter = newGO.AddComponent<MeshFilter>();
+        MeshRenderer meshRenderer = newGO.AddComponent<MeshRenderer>();
+
+        List<Vector3> coords = new List<Vector3>();
+        List<int> dummyIndices = new List<int>();
+        List<Vector2> textCoords = new List<Vector2>();
+        List<Vector3> normals = new List<Vector3>();
+
+        for (int i = 0; i <= myB.bIndexList.Length - 3; i = i + 3)
+        {
+            Vector3 normal_for_face = myB.bFaceNormals[i / 3];
+            normal_for_face = new Vector3(normal_for_face.x, normal_for_face.y, -normal_for_face.z);
+            coords.Add(myB.bVertices[myB.bIndexList[i]]); dummyIndices.Add(i); textCoords.Add(myB.bTextureCoordinates[myB.bTextureIndexList[i]]); normals.Add(normal_for_face);
+            coords.Add(myB.bVertices[myB.bIndexList[i + 1]]); dummyIndices.Add(i + 1); textCoords.Add(myB.bTextureCoordinates[myB.bTextureIndexList[i + 1]]); normals.Add(normal_for_face);
+            coords.Add(myB.bVertices[myB.bIndexList[i + 2]]); dummyIndices.Add(i + 2); textCoords.Add(myB.bTextureCoordinates[myB.bTextureIndexList[i + 2]]); normals.Add(normal_for_face);
+        }
+
+        mesh.vertices = coords.ToArray();
+        mesh.triangles = dummyIndices.ToArray();
+        mesh.uv = textCoords.ToArray();
+        mesh.normals = normals.ToArray(); ;
+
+        meshFilter.mesh = mesh;
+        return newGO;
+
     }
 
     private Matrix4x4 RotationMatrix(Vector3 axis, float angle)
