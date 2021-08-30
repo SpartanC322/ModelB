@@ -8,13 +8,13 @@ public class Pipeline : MonoBehaviour
     Matrix4x4 translationMatrix, rotationMatrix, scaleMatrix, viewingMatrix, projectionMatrix, matrixOfAllTransformations, matrixOfAll;
     private Vector3[] shapeVertices = new Vector3[18];
     private Texture2D screen;
-    private float angle;
     private Color defaultColour;
     private Light myLight;
     private Renderer myScreen;
     private Model myB = new Model(Model.myShape.B);
     private static int screenWidth = Screen.width;
     private static int screenHeight = Screen.height;
+    private float angle;
 
     // Start is called before the first frame update
     void Start()
@@ -120,11 +120,6 @@ public class Pipeline : MonoBehaviour
 
         List<Vector3> shapeList = new List<Vector3>(shapeVertices);
 
-        //foreach (var item in shapeVertices)
-        //{
-        //    shapeList.Add(item);
-        //}
-
         WriteVerticesToFile(shapeList, "justVertices");
 
         rotationMatrix = Matrix4x4.Rotate(Quaternion.AngleAxis(32, (new Vector3(1, 2, 3)).normalized));
@@ -132,11 +127,6 @@ public class Pipeline : MonoBehaviour
         WriteMatrixToFile(rotationMatrix, "rotationMatrix");
 
         List<Vector3> imageAfterRotation = findImageOf(shapeList, rotationMatrix);
-
-        //foreach (var item in shapeVertices)
-        //{
-        //    Debug.Log(item.ToString());
-        //}
 
         WriteVerticesToFile(imageAfterRotation, "rotatedVertices");
 
@@ -190,6 +180,7 @@ public class Pipeline : MonoBehaviour
     }
 
     //Matrix methods to manipulate position of shape
+    //Matrix for rotation
     private Matrix4x4 RotationMatrix(Vector3 axis, float angle)
     {
         Quaternion rotation = Quaternion.AngleAxis(angle, axis.normalized);
@@ -197,17 +188,31 @@ public class Pipeline : MonoBehaviour
         return Matrix4x4.TRS(Vector3.zero, rotation, Vector3.one);
     }
 
+    //Matrix for Scaling
     private Matrix4x4 ScalingMatrix(Vector3 scale)
     {
         return Matrix4x4.TRS(Vector3.zero, Quaternion.identity, scale);
     }
 
+    //Matrix for View
     private Matrix4x4 ViewingMatrix(Vector3 camera, Vector3 target, Vector3 up)
     {
         return Matrix4x4.TRS(-camera, Quaternion.LookRotation(target - camera, up.normalized), Vector3.one);
     }
 
-    //Creates all faces of B
+    //Matrix for transformation
+    private Vector3[] MatrixTransform(Vector3[] meshVertices, Matrix4x4 transformMatrix)
+    {
+        Vector3[] output = new Vector3[meshVertices.Length];
+        for (int i = 0; i < meshVertices.Length; i++)
+        {
+            output[i] = transformMatrix * new Vector4(meshVertices[i].x, meshVertices[i].y, meshVertices[i].z, 1);
+        }
+
+        return output;
+    }
+
+    //Creates all faces of the B
     private void CreateShape(Vector3[] shape)
     {
         //Front
@@ -287,11 +292,13 @@ public class Pipeline : MonoBehaviour
         CreateFace(shape[myB.GetIndexAt(93)], shape[myB.GetIndexAt(94)], shape[myB.GetIndexAt(95)]);
     }
 
-    public Vector3 GetVectorNormal(Vector2 a, Vector2 b, Vector2 c)
+    //Get the normal of the vaector
+    public Vector3 GetVectorNormal(Vector2 x, Vector2 y, Vector2 z)
     {
-        return Vector3.Normalize(Vector3.Cross(b - a, c - a));
+        return Vector3.Normalize(Vector3.Cross(y - x, z - x));
     }
 
+    //Get the direction of the light
     public Vector3 GetLightDirection(Vector3 center)
     {
         return Vector3.Normalize((center - myLight.transform.position));
@@ -315,34 +322,7 @@ public class Pipeline : MonoBehaviour
         }
     }
 
-    public void FloodFill(int x, int y, Color newColour, Color oldColour, Texture2D screen)
-    {
-
-        if ((x < 0) || (x >= screenWidth))
-        {
-            return;
-        }
-
-        if ((y < 0) || (y >= screenHeight))
-        {
-            return;
-        }
-
-        if (screen.GetPixel(x, y) != oldColour)
-        {
-            return;
-        }
-
-        else
-        {
-            screen.SetPixel(x, y, newColour);
-            FloodFill(x + 1, y, newColour, oldColour, screen);
-            FloodFill(x, y + 1, newColour, oldColour, screen);
-            FloodFill(x - 1, y, newColour, oldColour, screen);
-            FloodFill(x, y - 1, newColour, oldColour, screen);
-        }
-    }
-
+    //Fills the faces of the shape with colour given
     private void FillStack(int x, int y, Color newColour, Color oldColour)
     {
         Stack<Vector2> pixelStack = new Stack<Vector2>();
@@ -365,19 +345,21 @@ public class Pipeline : MonoBehaviour
         }
     }
 
+    //Finds the center of given points
     private Vector2 GetCenter(Vector2 point1, Vector2 point2, Vector2 point3)
     {
         return new Vector2((point1.x + point2.x + point3.x) / 3, (point1.y + point2.y + point3.y) / 3);
     }
 
-    public bool CheckBounds(Vector2 pixel)
+    //Checks bounds of screen
+    public bool CheckBounds(Vector2 z)
     {
-        if ((pixel.x < 0) || (pixel.x >= screenWidth - 1))
+        if ((z.x < 0) || (z.x >= screenWidth - 1))
         {
             return false;
         }
 
-        if ((pixel.y < 0) || (pixel.y >= screenHeight - 1))
+        if ((z.y < 0) || (z.y >= screenHeight - 1))
         {
             return false;
         }
@@ -385,17 +367,7 @@ public class Pipeline : MonoBehaviour
         return true;
     }
 
-    private Vector3[] MatrixTransform(Vector3[] meshVertices, Matrix4x4 transformMatrix)
-    {
-        Vector3[] output = new Vector3[meshVertices.Length];
-        for (int i = 0; i < meshVertices.Length; i++)
-        {
-            output[i] = transformMatrix * new Vector4(meshVertices[i].x, meshVertices[i].y, meshVertices[i].z, 1);
-        }
-
-        return output;
-    }
-
+    //Divide by z
     private Vector3[] DivideZ(Vector3[] shape)
     {
         List<Vector3> output = new List<Vector3>();
@@ -407,6 +379,7 @@ public class Pipeline : MonoBehaviour
         return output.ToArray();
     }
 
+    //Create a line using the screen and 2 given vectors
     private void CreateLine(Vector2 v1, Vector2 v2, Texture2D screen)
     {
         Vector2 start = v1, end = v2;
@@ -417,17 +390,20 @@ public class Pipeline : MonoBehaviour
         }
     }
 
+    //Plot points
     private void Plot(Texture2D screen, List<Vector2Int> list)
     {
         foreach (Vector2Int point in list)
             screen.SetPixel(point.x, point.y, Color.blue);
     }
 
-    public static Vector2Int ConvertXY(Vector3 v)
+    //Converts x and y vectors
+    public static Vector2Int ConvertXY(Vector3 z)
     {
-        return new Vector2Int((int)((v.x + 1.0f) * (screenWidth - 1) / 2.0f), (int)((1.0f - v.y) * (screenHeight - 1) / 2.0f));
+        return new Vector2Int((int)((z.x + 1.0f) * (screenWidth - 1) / 2.0f), (int)((1.0f - z.y) * (screenHeight - 1) / 2.0f));
     }
 
+    //Line clipping
     public static bool LineClip(ref Vector2 v, ref Vector2 u)
     {
         Outcode vOutcode = new Outcode(v);
@@ -502,6 +478,7 @@ public class Pipeline : MonoBehaviour
         return new Vector2(1, u.y + m * (1 - u.x));
     }
 
+    //Breshenham's line algorithm
     public static List<Vector2Int> BreshenhamLine(Vector2Int start, Vector2Int finish)
     {
         List<Vector2Int> breshenhamList = new List<Vector2Int>();
@@ -547,6 +524,7 @@ public class Pipeline : MonoBehaviour
         return breshenhamList;
     }
 
+    //Makes y values negative
     public static List<Vector2Int> NegativeY(List<Vector2Int> yValues)
     {
         List<Vector2Int> outputList = new List<Vector2Int>();
@@ -559,11 +537,13 @@ public class Pipeline : MonoBehaviour
         return outputList;
     }
 
+    //Makes a value negatuve
     public static Vector2Int MakeNegative(Vector2Int point)
     {
         return new Vector2Int(point.x, point.y * -1);
     }
 
+    //Swaps x and y values
     public static List<Vector2Int> SwapXY(List<Vector2Int> list)
     {
         List<Vector2Int> outputList = new List<Vector2Int>();
@@ -576,6 +556,7 @@ public class Pipeline : MonoBehaviour
         return outputList;
     }
 
+    //Swap x with y
     public static Vector2Int SwapXWithY(Vector2Int value)
     {
         return new Vector2Int(value.y, value.x);
