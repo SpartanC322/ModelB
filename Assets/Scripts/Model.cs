@@ -7,8 +7,8 @@ public class Model
 {
     public enum myShape { B, cube }
 
-    public Vector3[] bVertices = new Vector3[20];
-    public int[] bIndexList = new int[96];
+    public Vector3[] bVertices;
+    public int[] bIndexList;
     public Vector2[] bTextureCoordinates;
     public int[] bTextureIndexList;
     public Vector3[] bFaceNormals;
@@ -490,7 +490,7 @@ public class Model
 
     private void initialise()
     {
-        bVertices = new Vector3[20];
+        bVertices = new Vector3[18];
         bIndexList = new int[96];
         bTextureCoordinates = new Vector2[31];
         bTextureIndexList = new int[96];

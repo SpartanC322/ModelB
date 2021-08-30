@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
@@ -27,6 +28,14 @@ public class Pipeline : MonoBehaviour
 
         //CreateUnityGameObject(myB);
 
+        int i = 0;
+
+        foreach (var item in myB.bVertices)
+        {
+            i++;
+            Debug.Log(i+" | "+item.ToString());
+        }
+
         shapeVertices = myB.bVertices;
 
         Matrix4x4 rotationMatrix = Matrix4x4.Rotate(Quaternion.AngleAxis(32, (new Vector3(1, 2, 3)).normalized));
@@ -35,12 +44,19 @@ public class Pipeline : MonoBehaviour
 
         Vector3[] imageAfterRotation = new Vector3[100];
 
+        //foreach (var item in shapeVertices)
+        //{
+        //    Debug.Log(item.ToString());
+        //}
+
+        //Debug.Log(findImageOf(shapeVertices, rotationMatrix).ToString());
+
         imageAfterRotation = findImageOf(shapeVertices, rotationMatrix);
 
-        foreach (var item in imageAfterRotation)
-        {
-            Debug.Log(item.ToString());
-        }
+        //foreach (var item in imageAfterRotation)
+        //{
+        //    Debug.Log(item.ToString());
+        //}
 
         WriteVerticesToFile(imageAfterRotation, "rotatedImage");
 
@@ -408,33 +424,6 @@ public class Pipeline : MonoBehaviour
         }
 
         return true;
-    }
-
-    private Vector3[] ApplyProjectionMatrix(Vector3[] imageAfterViewingMatrix)
-    {
-        Matrix4x4 projectionMatrix = Matrix4x4.Perspective(45, 1.6f, 1, 1000);
-
-        Vector3[] imageAfterProjection = MatrixTransform(imageAfterViewingMatrix, projectionMatrix);
-
-        return imageAfterProjection;
-    }
-
-    private Vector3[] ApplyViewingMatrix(Vector3[] shape)
-    {
-        Matrix4x4 viewingMatrix = Matrix4x4.TRS(new Vector3(0, 0, 10), Quaternion.LookRotation(new Vector3(0, 0, 0) - new Vector3(0, 0, 10), new Vector3(0, 1, 0).normalized), Vector3.one);
-
-        Vector3[] imageAfterViewingMatrix = MatrixTransform(shape, viewingMatrix);
-
-        return imageAfterViewingMatrix;
-    }
-
-    public Vector3[] ApplyTranslationMatrix(Vector3[] shape)
-    {
-        Matrix4x4 transformMatrix = Matrix4x4.TRS(new Vector3(4, 3, 3), Quaternion.identity, Vector3.one);
-
-        Vector3[] imageAfterTranslate = MatrixTransform(shape, transformMatrix);
-
-        return imageAfterTranslate;
     }
 
     private Vector3[] MatrixTransform(Vector3[] meshVertices, Matrix4x4 transformMatrix)
