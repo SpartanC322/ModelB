@@ -11,10 +11,10 @@ public class Pipeline : MonoBehaviour
     private float angle;
     private Color defaultColour;
     public Light myLight;
-    private static int screenWidth = Screen.width;
-    private static int screenHeight = Screen.height;
     private Renderer myScreen;
     private Model myB = new Model(Model.myShape.B);
+    private static int screenWidth = Screen.width;
+    private static int screenHeight = Screen.height;
 
     // Start is called before the first frame update
     void Start()
@@ -28,90 +28,9 @@ public class Pipeline : MonoBehaviour
 
         //CreateUnityGameObject(myB);
 
-        //foreach (var item in myB.bVertices)
-        //{
-        //    Debug.Log(item.ToString());
-        //}
-
         shapeVertices = myB.bVertices;
 
-        List<Vector3> shapeList = new List<Vector3>(shapeVertices);
-
-        //foreach (var item in shapeVertices)
-        //{
-        //    shapeList.Add(item);
-        //}
-
-        WriteVerticesToFile(shapeList, "justVertices");
-
-        Matrix4x4 rotationMatrix = Matrix4x4.Rotate(Quaternion.AngleAxis(32, (new Vector3(1, 2, 3)).normalized));
-
-        WriteMatrixToFile(rotationMatrix, "rotationMatrix");
-
-        List<Vector3> imageAfterRotation = findImageOf(shapeList, rotationMatrix);
-
-        //foreach (var item in shapeVertices)
-        //{
-        //    Debug.Log(item.ToString());
-        //}
-
-        WriteVerticesToFile(imageAfterRotation, "rotatedVertices");
-
-        Matrix4x4 scaleMatrix = Matrix4x4.Scale(new Vector3(2, 3, 4));
-
-        WriteMatrixToFile(scaleMatrix, "scaleMatrix");
-
-        List<Vector3> imageAfterScale = findImageOf(imageAfterRotation, scaleMatrix);
-
-        WriteVerticesToFile(imageAfterScale, "scaleVertices");
-
-        Matrix4x4 translationMatrix = Matrix4x4.Translate(new Vector3(4, 2, 3));
-
-        WriteMatrixToFile(translationMatrix, "translationMatrix");
-
-        List<Vector3> imageAfterTranslation = findImageOf(imageAfterScale, translationMatrix);
-
-        WriteVerticesToFile(imageAfterTranslation, "translatedVertices");
-
-        Matrix4x4 matrixOfAllTransformations = rotationMatrix * scaleMatrix * translationMatrix;
-
-        WriteMatrixToFile(matrixOfAllTransformations, "allTransformsMatrix");
-
-        List<Vector3> afterAllTransforms = findImageOf(shapeList, matrixOfAllTransformations);
-
-        WriteVerticesToFile(afterAllTransforms, "allTransformsVertices");
-
-        Vector3 cam = new Vector3(1, 0, 10);
-        Vector3 tar = new Vector3(0, 0, 20);
-
-        Matrix4x4 viewingMatrix = Matrix4x4.TRS(-cam, Quaternion.LookRotation(tar - cam), new Vector3(0, 1, 0));
-
-        WriteMatrixToFile(viewingMatrix, "viewingMatrix");
-
-        List<Vector3> imageAfterViewing = findImageOf(imageAfterTranslation, viewingMatrix);
-
-        WriteVerticesToFile(imageAfterViewing, "viewingVertices");
-
-        Matrix4x4 projectionMatrix = Matrix4x4.Perspective(90, 1, 1, 100);
-
-        WriteMatrixToFile(projectionMatrix, "projectionMatrix");
-
-        List<Vector3> imageAfterProjection = findImageOf(imageAfterViewing, projectionMatrix);
-
-        WriteVerticesToFile(imageAfterProjection, "projectionVertices");
-
-        Matrix4x4 matrixOfAll = rotationMatrix * scaleMatrix * translationMatrix * viewingMatrix * projectionMatrix;
-
-        WriteMatrixToFile(matrixOfAll, "matrixOfAll");
-
-        List<Vector3> imageAfterAll = findImageOf(shapeList, matrixOfAll);
-
-        WriteVerticesToFile(imageAfterAll, "verticesAfterAll");
-
-        //foreach (var item in shapeVertices)
-        //{
-        //    Debug.Log(item.ToString());
-        //}
+        testMatrixAndVertices();
     }
 
     // Update is called once per frame
@@ -123,8 +42,8 @@ public class Pipeline : MonoBehaviour
 
         Matrix4x4 perspMatrix = Matrix4x4.Perspective(90, 1, 1, 100);
         Matrix4x4 viewMatrix = ViewingMatrix(new Vector3(1, 0, 10), new Vector3(0, 0, 20), new Vector3(0, 1, 0));
-        Matrix4x4 worldMatrix = RotationMatrix(new Vector3(0.5f, 0.5f, 0), angle);
-        Matrix4x4 allMatrix = perspMatrix * viewMatrix * worldMatrix;
+        Matrix4x4 rotationMatrix = RotationMatrix(new Vector3(0.5f, 0.5f, 0), angle);
+        Matrix4x4 allMatrix = perspMatrix * viewMatrix * rotationMatrix;
 
         CreateShape(DivideZ(MatrixTransform(shapeVertices, allMatrix)));
         screen.Apply();
@@ -132,14 +51,14 @@ public class Pipeline : MonoBehaviour
 
     private List<Vector3> findImageOf(List<Vector3> vertices, Matrix4x4 transformMatrix)
     {
-        List<Vector3> new_image = new List<Vector3>();
+        List<Vector3> newImage = new List<Vector3>();
 
         foreach (Vector3 v in vertices)
         {
-            new_image.Add(transformMatrix * v);
+            newImage.Add(transformMatrix * v);
         }
 
-        return new_image;
+        return newImage;
     }
 
 
@@ -189,6 +108,82 @@ public class Pipeline : MonoBehaviour
         meshFilter.mesh = mesh;
         return newGO;
 
+    }
+
+    private void testMatrixAndVertices()
+    {
+        Vector3 cam = new Vector3(1, 0, 10);
+        Vector3 tar = new Vector3(0, 0, 20);
+
+        List<Vector3> shapeList = new List<Vector3>(shapeVertices);
+
+        //foreach (var item in shapeVertices)
+        //{
+        //    shapeList.Add(item);
+        //}
+
+        WriteVerticesToFile(shapeList, "justVertices");
+
+        Matrix4x4 rotationMatrix = Matrix4x4.Rotate(Quaternion.AngleAxis(32, (new Vector3(1, 2, 3)).normalized));
+
+        WriteMatrixToFile(rotationMatrix, "rotationMatrix");
+
+        List<Vector3> imageAfterRotation = findImageOf(shapeList, rotationMatrix);
+
+        //foreach (var item in shapeVertices)
+        //{
+        //    Debug.Log(item.ToString());
+        //}
+
+        WriteVerticesToFile(imageAfterRotation, "rotatedVertices");
+
+        Matrix4x4 scaleMatrix = Matrix4x4.Scale(new Vector3(2, 3, 4));
+
+        WriteMatrixToFile(scaleMatrix, "scaleMatrix");
+
+        List<Vector3> imageAfterScale = findImageOf(imageAfterRotation, scaleMatrix);
+
+        WriteVerticesToFile(imageAfterScale, "scaleVertices");
+
+        Matrix4x4 translationMatrix = Matrix4x4.Translate(new Vector3(4, 2, 3));
+
+        WriteMatrixToFile(translationMatrix, "translationMatrix");
+
+        List<Vector3> imageAfterTranslation = findImageOf(imageAfterScale, translationMatrix);
+
+        WriteVerticesToFile(imageAfterTranslation, "translatedVertices");
+
+        Matrix4x4 matrixOfAllTransformations = rotationMatrix * scaleMatrix * translationMatrix;
+
+        WriteMatrixToFile(matrixOfAllTransformations, "allTransformsMatrix");
+
+        List<Vector3> afterAllTransforms = findImageOf(shapeList, matrixOfAllTransformations);
+
+        WriteVerticesToFile(afterAllTransforms, "allTransformsVertices");
+
+        Matrix4x4 viewingMatrix = ViewingMatrix(new Vector3(1, 0, 10), new Vector3(0, 0, 20), new Vector3(0, 1, 0));
+
+        WriteMatrixToFile(viewingMatrix, "viewingMatrix");
+
+        List<Vector3> imageAfterViewing = findImageOf(imageAfterTranslation, viewingMatrix);
+
+        WriteVerticesToFile(imageAfterViewing, "viewingVertices");
+
+        Matrix4x4 projectionMatrix = Matrix4x4.Perspective(90, 1, 1, 100);
+
+        WriteMatrixToFile(projectionMatrix, "projectionMatrix");
+
+        List<Vector3> imageAfterProjection = findImageOf(imageAfterViewing, projectionMatrix);
+
+        WriteVerticesToFile(imageAfterProjection, "projectionVertices");
+
+        Matrix4x4 matrixOfAll = rotationMatrix * scaleMatrix * translationMatrix * viewingMatrix * projectionMatrix;
+
+        WriteMatrixToFile(matrixOfAll, "matrixOfAll");
+
+        List<Vector3> imageAfterAll = findImageOf(shapeList, matrixOfAll);
+
+        WriteVerticesToFile(imageAfterAll, "verticesAfterAll");
     }
 
     private Matrix4x4 RotationMatrix(Vector3 axis, float angle)
