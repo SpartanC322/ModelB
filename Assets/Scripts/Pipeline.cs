@@ -5,12 +5,12 @@ using UnityEngine;
 
 public class Pipeline : MonoBehaviour
 {
-    Matrix4x4 translation, rotation, scale, viewing, projection;
+    Matrix4x4 translationMatrix, rotationMatrix, scaleMatrix, viewingMatrix, projectionMatrix, matrixOfAllTransformations, matrixOfAll;
     private Vector3[] shapeVertices = new Vector3[18];
     private Texture2D screen;
     private float angle;
     private Color defaultColour;
-    public Light myLight;
+    private Light myLight;
     private Renderer myScreen;
     private Model myB = new Model(Model.myShape.B);
     private static int screenWidth = Screen.width;
@@ -28,7 +28,7 @@ public class Pipeline : MonoBehaviour
 
         //CreateUnityGameObject(myB);
 
-        shapeVertices = myB.bVertices;
+        shapeVertices = myB.GetVertices();
 
         testMatrixAndVertices();
     }
@@ -49,6 +49,7 @@ public class Pipeline : MonoBehaviour
         screen.Apply();
     }
 
+    //Modifys the given vertice list using given matrix
     private List<Vector3> findImageOf(List<Vector3> vertices, Matrix4x4 transformMatrix)
     {
         List<Vector3> newImage = new List<Vector3>();
@@ -61,7 +62,7 @@ public class Pipeline : MonoBehaviour
         return newImage;
     }
 
-
+    //Writes a Vertice list to a text file
     void WriteVerticesToFile(List<Vector3> vertices, string txt)
     {
         using (TextWriter tw = new StreamWriter(txt + ".txt"))
@@ -71,6 +72,7 @@ public class Pipeline : MonoBehaviour
         }
     }
 
+    //Writes a matrix to a text file
     void WriteMatrixToFile(Matrix4x4 matrix, string txt)
     {
         using (TextWriter tw = new StreamWriter(txt + ".txt"))
@@ -91,13 +93,13 @@ public class Pipeline : MonoBehaviour
         List<Vector2> textCoords = new List<Vector2>();
         List<Vector3> normals = new List<Vector3>();
 
-        for (int i = 0; i <= myB.bIndexList.Length - 3; i = i + 3)
+        for (int i = 0; i <= myB.GetIndex().Length - 3; i = i + 3)
         {
-            Vector3 normal_for_face = myB.bFaceNormals[i / 3];
-            normal_for_face = new Vector3(normal_for_face.x, normal_for_face.y, -normal_for_face.z);
-            coords.Add(myB.bVertices[myB.bIndexList[i]]); dummyIndices.Add(i); textCoords.Add(myB.bTextureCoordinates[myB.bTextureIndexList[i]]); normals.Add(normal_for_face);
-            coords.Add(myB.bVertices[myB.bIndexList[i + 1]]); dummyIndices.Add(i + 1); textCoords.Add(myB.bTextureCoordinates[myB.bTextureIndexList[i + 1]]); normals.Add(normal_for_face);
-            coords.Add(myB.bVertices[myB.bIndexList[i + 2]]); dummyIndices.Add(i + 2); textCoords.Add(myB.bTextureCoordinates[myB.bTextureIndexList[i + 2]]); normals.Add(normal_for_face);
+            Vector3 normalForFace = myB.GetFaceNormals()[i / 3];
+            normalForFace = new Vector3(normalForFace.x, normalForFace.y, -normalForFace.z);
+            coords.Add(myB.GetVertices()[myB.GetIndex()[i]]); dummyIndices.Add(i); textCoords.Add(myB.GetTextureCoordinates()[myB.GetTextureIndex()[i]]); normals.Add(normalForFace);
+            coords.Add(myB.GetVertices()[myB.GetIndex()[i + 1]]); dummyIndices.Add(i + 1); textCoords.Add(myB.GetTextureCoordinates()[myB.GetTextureIndex()[i + 1]]); normals.Add(normalForFace);
+            coords.Add(myB.GetVertices()[myB.GetIndex()[i + 2]]); dummyIndices.Add(i + 2); textCoords.Add(myB.GetTextureCoordinates()[myB.GetTextureIndex()[i + 2]]); normals.Add(normalForFace);
         }
 
         mesh.vertices = coords.ToArray();
@@ -110,6 +112,7 @@ public class Pipeline : MonoBehaviour
 
     }
 
+    //Generate files for Assignment 1 excel sheet
     private void testMatrixAndVertices()
     {
         Vector3 cam = new Vector3(1, 0, 10);
@@ -124,7 +127,7 @@ public class Pipeline : MonoBehaviour
 
         WriteVerticesToFile(shapeList, "justVertices");
 
-        Matrix4x4 rotationMatrix = Matrix4x4.Rotate(Quaternion.AngleAxis(32, (new Vector3(1, 2, 3)).normalized));
+        rotationMatrix = Matrix4x4.Rotate(Quaternion.AngleAxis(32, (new Vector3(1, 2, 3)).normalized));
 
         WriteMatrixToFile(rotationMatrix, "rotationMatrix");
 
@@ -137,7 +140,7 @@ public class Pipeline : MonoBehaviour
 
         WriteVerticesToFile(imageAfterRotation, "rotatedVertices");
 
-        Matrix4x4 scaleMatrix = Matrix4x4.Scale(new Vector3(2, 3, 4));
+        scaleMatrix = Matrix4x4.Scale(new Vector3(2, 3, 4));
 
         WriteMatrixToFile(scaleMatrix, "scaleMatrix");
 
@@ -145,7 +148,7 @@ public class Pipeline : MonoBehaviour
 
         WriteVerticesToFile(imageAfterScale, "scaleVertices");
 
-        Matrix4x4 translationMatrix = Matrix4x4.Translate(new Vector3(4, 2, 3));
+        translationMatrix = Matrix4x4.Translate(new Vector3(4, 2, 3));
 
         WriteMatrixToFile(translationMatrix, "translationMatrix");
 
@@ -153,7 +156,7 @@ public class Pipeline : MonoBehaviour
 
         WriteVerticesToFile(imageAfterTranslation, "translatedVertices");
 
-        Matrix4x4 matrixOfAllTransformations = rotationMatrix * scaleMatrix * translationMatrix;
+        matrixOfAllTransformations = rotationMatrix * scaleMatrix * translationMatrix;
 
         WriteMatrixToFile(matrixOfAllTransformations, "allTransformsMatrix");
 
@@ -161,7 +164,7 @@ public class Pipeline : MonoBehaviour
 
         WriteVerticesToFile(afterAllTransforms, "allTransformsVertices");
 
-        Matrix4x4 viewingMatrix = ViewingMatrix(new Vector3(1, 0, 10), new Vector3(0, 0, 20), new Vector3(0, 1, 0));
+        viewingMatrix = ViewingMatrix(new Vector3(1, 0, 10), new Vector3(0, 0, 20), new Vector3(0, 1, 0));
 
         WriteMatrixToFile(viewingMatrix, "viewingMatrix");
 
@@ -169,7 +172,7 @@ public class Pipeline : MonoBehaviour
 
         WriteVerticesToFile(imageAfterViewing, "viewingVertices");
 
-        Matrix4x4 projectionMatrix = Matrix4x4.Perspective(90, 1, 1, 100);
+        projectionMatrix = Matrix4x4.Perspective(90, 1, 1, 100);
 
         WriteMatrixToFile(projectionMatrix, "projectionMatrix");
 
@@ -177,7 +180,7 @@ public class Pipeline : MonoBehaviour
 
         WriteVerticesToFile(imageAfterProjection, "projectionVertices");
 
-        Matrix4x4 matrixOfAll = rotationMatrix * scaleMatrix * translationMatrix * viewingMatrix * projectionMatrix;
+        matrixOfAll = rotationMatrix * scaleMatrix * translationMatrix * viewingMatrix * projectionMatrix;
 
         WriteMatrixToFile(matrixOfAll, "matrixOfAll");
 
@@ -186,6 +189,7 @@ public class Pipeline : MonoBehaviour
         WriteVerticesToFile(imageAfterAll, "verticesAfterAll");
     }
 
+    //Matrix methods to manipulate position of shape
     private Matrix4x4 RotationMatrix(Vector3 axis, float angle)
     {
         Quaternion rotation = Quaternion.AngleAxis(angle, axis.normalized);
@@ -203,171 +207,97 @@ public class Pipeline : MonoBehaviour
         return Matrix4x4.TRS(-camera, Quaternion.LookRotation(target - camera, up.normalized), Vector3.one);
     }
 
+    //Creates all faces of B
     private void CreateShape(Vector3[] shape)
     {
         //Front
-        CreateFace(shape[myB.bIndexList[0]], shape[myB.bIndexList[1]], shape[myB.bIndexList[2]]);
+        CreateFace(shape[myB.GetIndexAt(0)], shape[myB.GetIndexAt(1)], shape[myB.GetIndexAt(2)]);
 
-        CreateFace(shape[myB.bIndexList[3]], shape[myB.bIndexList[4]], shape[myB.bIndexList[5]]);
+        CreateFace(shape[myB.GetIndexAt(3)], shape[myB.GetIndexAt(4)], shape[myB.GetIndexAt(5)]);
 
-        CreateFace(shape[myB.bIndexList[6]], shape[myB.bIndexList[7]], shape[myB.bIndexList[8]]);
+        CreateFace(shape[myB.GetIndexAt(6)], shape[myB.GetIndexAt(7)], shape[myB.GetIndexAt(8)]);
 
-        CreateFace(shape[myB.bIndexList[9]], shape[myB.bIndexList[10]], shape[myB.bIndexList[11]]);
+        CreateFace(shape[myB.GetIndexAt(9)], shape[myB.GetIndexAt(10)], shape[myB.GetIndexAt(11)]);
 
-        CreateFace(shape[myB.bIndexList[12]], shape[myB.bIndexList[13]], shape[myB.bIndexList[14]]);
+        CreateFace(shape[myB.GetIndexAt(12)], shape[myB.GetIndexAt(13)], shape[myB.GetIndexAt(14)]);
 
-        CreateFace(shape[myB.bIndexList[15]], shape[myB.bIndexList[16]], shape[myB.bIndexList[17]]);
+        CreateFace(shape[myB.GetIndexAt(15)], shape[myB.GetIndexAt(16)], shape[myB.GetIndexAt(17)]);
 
-        CreateFace(shape[myB.bIndexList[18]], shape[myB.bIndexList[19]], shape[myB.bIndexList[20]]);
+        CreateFace(shape[myB.GetIndexAt(18)], shape[myB.GetIndexAt(19)], shape[myB.GetIndexAt(20)]);
 
 
         //Back
-        CreateFace(shape[myB.bIndexList[21]], shape[myB.bIndexList[22]], shape[myB.bIndexList[23]]);
+        CreateFace(shape[myB.GetIndexAt(21)], shape[myB.GetIndexAt(22)], shape[myB.GetIndexAt(23)]);
 
-        CreateFace(shape[myB.bIndexList[24]], shape[myB.bIndexList[25]], shape[myB.bIndexList[26]]);
+        CreateFace(shape[myB.GetIndexAt(24)], shape[myB.GetIndexAt(25)], shape[myB.GetIndexAt(26)]);
 
-        CreateFace(shape[myB.bIndexList[27]], shape[myB.bIndexList[28]], shape[myB.bIndexList[29]]);
+        CreateFace(shape[myB.GetIndexAt(27)], shape[myB.GetIndexAt(28)], shape[myB.GetIndexAt(29)]);
 
-        CreateFace(shape[myB.bIndexList[30]], shape[myB.bIndexList[31]], shape[myB.bIndexList[32]]);
+        CreateFace(shape[myB.GetIndexAt(30)], shape[myB.GetIndexAt(31)], shape[myB.GetIndexAt(32)]);
 
-        CreateFace(shape[myB.bIndexList[33]], shape[myB.bIndexList[34]], shape[myB.bIndexList[35]]);
+        CreateFace(shape[myB.GetIndexAt(33)], shape[myB.GetIndexAt(34)], shape[myB.GetIndexAt(35)]);
 
-        CreateFace(shape[myB.bIndexList[36]], shape[myB.bIndexList[37]], shape[myB.bIndexList[28]]);
+        CreateFace(shape[myB.GetIndexAt(36)], shape[myB.GetIndexAt(37)], shape[myB.GetIndexAt(28)]);
 
-        CreateFace(shape[myB.bIndexList[39]], shape[myB.bIndexList[40]], shape[myB.bIndexList[41]]);
+        CreateFace(shape[myB.GetIndexAt(39)], shape[myB.GetIndexAt(40)], shape[myB.GetIndexAt(41)]);
 
         //Top
-        CreateFace(shape[myB.bIndexList[42]], shape[myB.bIndexList[43]], shape[myB.bIndexList[44]]);
+        CreateFace(shape[myB.GetIndexAt(42)], shape[myB.GetIndexAt(43)], shape[myB.GetIndexAt(44)]);
 
-        CreateFace(shape[myB.bIndexList[45]], shape[myB.bIndexList[46]], shape[myB.bIndexList[47]]);
+        CreateFace(shape[myB.GetIndexAt(45)], shape[myB.GetIndexAt(46)], shape[myB.GetIndexAt(47)]);
 
         //Bottom
-        CreateFace(shape[myB.bIndexList[48]], shape[myB.bIndexList[49]], shape[myB.bIndexList[50]]);
+        CreateFace(shape[myB.GetIndexAt(48)], shape[myB.GetIndexAt(49)], shape[myB.GetIndexAt(50)]);
 
-        CreateFace(shape[myB.bIndexList[51]], shape[myB.bIndexList[52]], shape[myB.bIndexList[53]]);
+        CreateFace(shape[myB.GetIndexAt(51)], shape[myB.GetIndexAt(52)], shape[myB.GetIndexAt(53)]);
 
         //Left
-        CreateFace(shape[myB.bIndexList[54]], shape[myB.bIndexList[55]], shape[myB.bIndexList[56]]);
+        CreateFace(shape[myB.GetIndexAt(54)], shape[myB.GetIndexAt(55)], shape[myB.GetIndexAt(56)]);
 
-        CreateFace(shape[myB.bIndexList[57]], shape[myB.bIndexList[58]], shape[myB.bIndexList[59]]);
+        CreateFace(shape[myB.GetIndexAt(57)], shape[myB.GetIndexAt(58)], shape[myB.GetIndexAt(59)]);
 
         //Right centre top
-        CreateFace(shape[myB.bIndexList[60]], shape[myB.bIndexList[61]], shape[myB.bIndexList[62]]);
+        CreateFace(shape[myB.GetIndexAt(60)], shape[myB.GetIndexAt(61)], shape[myB.GetIndexAt(62)]);
 
-        CreateFace(shape[myB.bIndexList[63]], shape[myB.bIndexList[64]], shape[myB.bIndexList[65]]);
+        CreateFace(shape[myB.GetIndexAt(63)], shape[myB.GetIndexAt(64)], shape[myB.GetIndexAt(65)]);
 
         //Right middle top
-        CreateFace(shape[myB.bIndexList[66]], shape[myB.bIndexList[67]], shape[myB.bIndexList[68]]);
+        CreateFace(shape[myB.GetIndexAt(66)], shape[myB.GetIndexAt(67)], shape[myB.GetIndexAt(68)]);
 
-        CreateFace(shape[myB.bIndexList[69]], shape[myB.bIndexList[70]], shape[myB.bIndexList[71]]);
+        CreateFace(shape[myB.GetIndexAt(69)], shape[myB.GetIndexAt(70)], shape[myB.GetIndexAt(71)]);
 
         //Right upper top
-        CreateFace(shape[myB.bIndexList[72]], shape[myB.bIndexList[73]], shape[myB.bIndexList[74]]);
+        CreateFace(shape[myB.GetIndexAt(72)], shape[myB.GetIndexAt(73)], shape[myB.GetIndexAt(74)]);
 
-        CreateFace(shape[myB.bIndexList[75]], shape[myB.bIndexList[76]], shape[myB.bIndexList[77]]);
+        CreateFace(shape[myB.GetIndexAt(75)], shape[myB.GetIndexAt(76)], shape[myB.GetIndexAt(77)]);
 
         //Right centre bottom
-        CreateFace(shape[myB.bIndexList[78]], shape[myB.bIndexList[79]], shape[myB.bIndexList[80]]);
+        CreateFace(shape[myB.GetIndexAt(78)], shape[myB.GetIndexAt(79)], shape[myB.GetIndexAt(80)]);
 
-        CreateFace(shape[myB.bIndexList[81]], shape[myB.bIndexList[82]], shape[myB.bIndexList[83]]);
+        CreateFace(shape[myB.GetIndexAt(81)], shape[myB.GetIndexAt(82)], shape[myB.GetIndexAt(83)]);
 
         //Right middle bottom
-        CreateFace(shape[myB.bIndexList[84]], shape[myB.bIndexList[85]], shape[myB.bIndexList[86]]);
+        CreateFace(shape[myB.GetIndexAt(84)], shape[myB.GetIndexAt(85)], shape[myB.GetIndexAt(86)]);
 
-        CreateFace(shape[myB.bIndexList[87]], shape[myB.bIndexList[88]], shape[myB.bIndexList[89]]);
+        CreateFace(shape[myB.GetIndexAt(87)], shape[myB.GetIndexAt(88)], shape[myB.GetIndexAt(89)]);
 
         //Right lower bottom
-        CreateFace(shape[myB.bIndexList[90]], shape[myB.bIndexList[91]], shape[myB.bIndexList[92]]);
+        CreateFace(shape[myB.GetIndexAt(90)], shape[myB.GetIndexAt(91)], shape[myB.GetIndexAt(92)]);
 
-        CreateFace(shape[myB.bIndexList[93]], shape[myB.bIndexList[94]], shape[myB.bIndexList[95]]);
-
-        ////Front
-        //CreateFace(shape[0], shape[1], shape[4]);
-
-        //CreateFace(shape[1], shape[2], shape[4]);
-
-        //CreateFace(shape[2], shape[3], shape[4]);
-
-        //CreateFace(shape[0], shape[4], shape[5]);
-
-        //CreateFace(shape[5], shape[6], shape[7]);
-
-        //CreateFace(shape[5], shape[7], shape[8]);
-
-        //CreateFace(shape[5], shape[8], shape[0]);
-
-
-        ////Back
-        //CreateFace(shape[9], shape[10], shape[13]);
-
-        //CreateFace(shape[10], shape[11], shape[13]);
-
-        //CreateFace(shape[11], shape[12], shape[13]);
-
-        //CreateFace(shape[9], shape[13], shape[14]);
-
-        //CreateFace(shape[14], shape[15], shape[16]);
-
-        //CreateFace(shape[14], shape[16], shape[17]);
-
-        //CreateFace(shape[14], shape[17], shape[9]);
-
-        ////Top
-        //CreateFace(shape[3], shape[12], shape[13]);
-
-        //CreateFace(shape[13], shape[4], shape[3]);
-
-        ////Bottom
-        //CreateFace(shape[5], shape[14], shape[15]);
-
-        //CreateFace(shape[15], shape[6], shape[5]);
-
-        ////Left
-        //CreateFace(shape[4], shape[13], shape[14]);
-
-        //CreateFace(shape[14], shape[5], shape[4]);
-
-        ////Right centre top
-        //CreateFace(shape[0], shape[9], shape[10]);
-
-        //CreateFace(shape[10], shape[1], shape[0]);
-
-        ////Right middle top
-        //CreateFace(shape[1], shape[10], shape[11]);
-
-        //CreateFace(shape[11], shape[2], shape[1]);
-
-        ////Right upper top
-        //CreateFace(shape[2], shape[11], shape[12]);
-
-        //CreateFace(shape[12], shape[3], shape[2]);
-
-        ////Right centre bottom
-        //CreateFace(shape[8], shape[17], shape[9]);
-
-        //CreateFace(shape[9], shape[0], shape[8]);
-
-        ////Right middle bottom
-        //CreateFace(shape[7], shape[16], shape[17]);
-
-        //CreateFace(shape[17], shape[8], shape[7]);
-
-        ////Right lower bottom
-        //CreateFace(shape[6], shape[15], shape[16]);
-
-        //CreateFace(shape[16], shape[7], shape[6]);
+        CreateFace(shape[myB.GetIndexAt(93)], shape[myB.GetIndexAt(94)], shape[myB.GetIndexAt(95)]);
     }
 
-    public Vector3 getVectorNormal(Vector2 a, Vector2 b, Vector2 c)
+    public Vector3 GetVectorNormal(Vector2 a, Vector2 b, Vector2 c)
     {
         return Vector3.Normalize(Vector3.Cross(b - a, c - a));
     }
 
-    public Vector3 getLightDirection(Vector3 center)
+    public Vector3 GetLightDirection(Vector3 center)
     {
         return Vector3.Normalize((center - myLight.transform.position));
     }
 
+    //Issue with back face thinking it is front
     public void CreateFace(Vector2 i, Vector2 j, Vector2 k)
     {
         float dotProduct = (j.x - i.x) * (k.y - j.y) - (j.y - i.y) * (k.x - j.x);

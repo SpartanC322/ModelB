@@ -7,11 +7,11 @@ public class Model
 {
     public enum myShape { B, cube }
 
-    public Vector3[] bVertices;
-    public int[] bIndexList;
-    public Vector2[] bTextureCoordinates;
-    public int[] bTextureIndexList;
-    public Vector3[] bFaceNormals;
+    private Vector3[] bVertices;
+    private int[] bIndexList;
+    private Vector2[] bTextureCoordinates;
+    private int[] bTextureIndexList;
+    private Vector3[] bFaceNormals;
 
     public Model(myShape shape)
     {
@@ -33,6 +33,36 @@ public class Model
 
                 break;
         }    
+    }
+
+    public Vector3[] GetVertices()
+    {
+        return bVertices;
+    }
+
+    public int[] GetIndex()
+    {
+        return bIndexList;
+    }
+
+    public Vector2[] GetTextureCoordinates()
+    {
+        return bTextureCoordinates;
+    }
+
+    public int[] GetTextureIndex()
+    {
+        return bTextureIndexList;
+    }
+
+    public Vector3[] GetFaceNormals()
+    {
+        return bFaceNormals;
+    }
+
+    public int GetIndexAt(int index)
+    {
+        return bIndexList[index];
     }
 
     private void addBTextureCoordinates()
